@@ -18,7 +18,7 @@ var queryCmd = &cobra.Command{
 			return err
 		}
 		defer client.Close()
-	
+
 		info, err := client.QueryInfo() // QueryInfo, QueryPlayer, QueryRules
 		if err != nil {
 			return err

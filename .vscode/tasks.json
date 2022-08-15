@@ -2,13 +2,27 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build",
+            "label": "build",
             "type": "shell",
             "command": "go build",
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "dependsOn": [
+                "tidy",
+                "format"
+            ],
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "go fmt ...",
+        },
+        {
+            "label": "tidy",
+            "type": "shell",
+            "command": "go mod tidy",
         }
     ]
 }

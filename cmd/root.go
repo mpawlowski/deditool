@@ -14,7 +14,6 @@ var rootCmd = &cobra.Command{
 	Long:  `Manage and troubleshoot dedicated gameservers`,
 }
 
-
 func init() {
 	rootCmd.AddCommand(steam.Cmd())
 }

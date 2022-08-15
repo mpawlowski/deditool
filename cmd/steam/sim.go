@@ -51,16 +51,16 @@ var simCmd = &cobra.Command{
 			fmt.Printf("udp resolve error: %v\n", err)
 			return
 		}
-	
+
 		conn, err := net.ListenUDP("udp", addr)
 		if err != nil {
 			fmt.Printf("udp listen error: %v\n", err)
 			return
 		}
-	
+
 		serverResponder := func(conn *net.UDPConn) {
 			fmt.Printf("now listening on %s\n", conn.LocalAddr().String())
-	
+
 			for {
 				p := make([]byte, 2048)
 				oob := make([]byte, 2048)
@@ -69,11 +69,11 @@ var simCmd = &cobra.Command{
 					fmt.Printf("error reading packet: %v", err)
 					continue
 				}
-	
+
 				if packetLength < 6 {
 					continue
 				}
-	
+
 				demoserver := BuildServerInfo(
 					serverName,
 					serverMap,
@@ -83,7 +83,7 @@ var simCmd = &cobra.Command{
 					serverPlayersMax,
 					serverPlayersBots,
 				)
-	
+
 				a2sHeader := p[5]
 				switch a2sHeader {
 				case A2S_INFO_HEADER:
@@ -101,21 +101,21 @@ var simCmd = &cobra.Command{
 				}
 			}
 		}
-	
+
 		go serverResponder(conn)
-	
+
 		sigs := make(chan os.Signal, 1)
 		done := make(chan bool, 1)
-	
+
 		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	
+
 		go func() {
 			sig := <-sigs
 			fmt.Println()
 			fmt.Printf("caught signal: %s\n", sig)
 			done <- true
 		}()
-	
+
 		<-done
 	},
 }
@@ -149,12 +149,12 @@ func BuildServerInfo(serverName string, serverMap string, serverFolder string, s
 	buf.WriteByte(byte(playersBots))
 
 	// settings
-	buf.WriteByte(0x64) // d - dedicated
-	buf.WriteByte(0x6c) // l - linux
-	buf.WriteByte(0x01) // private
-	buf.WriteByte(0x00) // vac disabled
+	buf.WriteByte(0x64)       // d - dedicated
+	buf.WriteByte(0x6c)       // l - linux
+	buf.WriteByte(0x01)       // private
+	buf.WriteByte(0x00)       // vac disabled
 	buf.WriteString("v0.0.1") // server version
-	buf.WriteByte(0x00)           // null byte
+	buf.WriteByte(0x00)       // null byte
 
 	b = buf.Bytes()
 
