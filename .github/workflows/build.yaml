@@ -20,9 +20,11 @@ jobs:
 
       - run: mkdir release-bin/
 
-      - run: env GOOS=linux GOARCH=amd64 go build -o release-bin/deditool-linux-x64
+      - run: env GOOS=linux GOARCH=amd64 go build -o release-bin/deditool-linux-amd64
 
       - run: env GOOS=linux GOARCH=arm64 go build -o release-bin/deditool-linux-arm64
+
+      - run: env GOOS=windows GOARCH=amd64 go build -o release-bin/deditool-win-amd64.exe
 
       - uses: marvinpinto/action-automatic-releases@latest
         with:
