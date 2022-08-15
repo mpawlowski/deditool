@@ -16,6 +16,10 @@ jobs:
         with:
           go-version: '^1.19.0' 
 
+      - run: go mod tidy
+
+      - run: go fmt ...
+
       - run: git diff-index -p HEAD --
 
       - run: mkdir release-bin/
