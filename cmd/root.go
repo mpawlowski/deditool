@@ -11,7 +11,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "deditool",
 	Short: "Manage and troubleshoot dedicated gameservers",
-	Long:  `Manage mod troubleshoot dedicated gameservers`,
+	Long:  `Manage and troubleshoot dedicated gameservers`,
 }
 
 

@@ -1,0 +1,31 @@
+﻿name: Build - Continuous
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+
+    runs-on: [linux, x64]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: git diff-index -p HEAD --
+
+      - run: mkdir release-bin/
+
+      - run: env GOOS=linux GOARCH=amd64 go build -o release-bin/deditool-linux-x64
+
+      - run: env GOOS=linux GOARCH=arm64 go build -o release-bin/deditool-linux-arm64
+
+      - uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            LICENSE
+            release-bin/*

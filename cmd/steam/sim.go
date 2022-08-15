@@ -75,7 +75,7 @@ var simCmd = &cobra.Command{
 				}
 	
 				demoserver := BuildServerInfo(
-					fmt.Sprintf("%s (%s)", serverName, addr.IP),
+					serverName,
 					serverMap,
 					serverFolder,
 					serverGame,
