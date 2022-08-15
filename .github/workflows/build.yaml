@@ -18,7 +18,7 @@ jobs:
 
       - run: go mod tidy
 
-      - run: go fmt ...
+      - run: go fmt ./...
 
       - run: git diff-index -p HEAD --
 
