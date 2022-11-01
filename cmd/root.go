@@ -9,9 +9,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "deditool",
-	Short: "Manage and troubleshoot dedicated gameservers",
-	Long:  `Manage and troubleshoot dedicated gameservers`,
+	Use:          "deditool",
+	Short:        "Manage and troubleshoot dedicated gameservers",
+	Long:         `Manage and troubleshoot dedicated gameservers`,
+	SilenceUsage: true,
 }
 
 func init() {
