@@ -8,18 +8,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var queryCmd = &cobra.Command{
-	Use:   "query",
-	Short: "Query a gameserver",
-	Long:  `Query a gameserver using the Steam A2S_INFO protocol.`,
+var queryPlayersCmd = &cobra.Command{
+	Use:   "query-players",
+	Short: "Query the players in a gameserver",
+	Long:  `Query the players in a gameserver using the Steam A2S_PLAYER protocol.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+
 		client, err := a2s.NewClient(fmt.Sprintf("%s:%d", queryHost, queryPort))
 		if err != nil {
 			return err
 		}
 		defer client.Close()
 
-		info, err := client.QueryInfo() // QueryInfo, QueryPlayer, QueryRules
+		info, err := client.QueryPlayer()
 		if err != nil {
 			return err
 		}
@@ -32,10 +33,7 @@ var queryCmd = &cobra.Command{
 	},
 }
 
-var queryHost string
-var queryPort int
-
 func init() {
-	queryCmd.PersistentFlags().StringVar(&queryHost, "host", "127.0.0.1", "Hostname to query")
-	queryCmd.PersistentFlags().IntVar(&queryPort, "port", 27015, "Port to query")
+	queryPlayersCmd.PersistentFlags().StringVar(&queryHost, "host", "127.0.0.1", "Hostname to query")
+	queryPlayersCmd.PersistentFlags().IntVar(&queryPort, "port", 27015, "Port to query")
 }

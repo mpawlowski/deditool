@@ -16,7 +16,7 @@ var steamCmd = &cobra.Command{
 }
 
 func init() {
-	steamCmd.AddCommand(queryCmd, simCmd)
+	steamCmd.AddCommand(queryCmd, queryPlayersCmd, simCmd)
 }
 
 func Cmd() *cobra.Command {
