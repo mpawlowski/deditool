@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/mpawlowski/deditool/v2/cmd/r2modman"
 	"github.com/mpawlowski/deditool/v2/cmd/steam"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +17,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(steam.Cmd())
+	rootCmd.AddCommand(steam.Cmd(), r2modman.Cmd())
 }
 
 func Execute() {
