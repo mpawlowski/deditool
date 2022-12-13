@@ -2,6 +2,7 @@ package steam
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 	"net"
 	"os"
@@ -74,25 +75,44 @@ var simCmd = &cobra.Command{
 					continue
 				}
 
-				demoserver := BuildServerInfo(
-					serverName,
-					serverMap,
-					serverFolder,
-					serverGame,
-					serverPlayersCurrent,
-					serverPlayersMax,
-					serverPlayersBots,
-				)
-
-				a2sHeader := p[5]
+				a2sHeader := p[4]
 				switch a2sHeader {
-				case A2S_INFO_HEADER:
+				case A2S_INFO_REQUEST_HEADER:
 					fmt.Printf("a2s-info packet (%s) request 0x%x\n", addr.IP, a2sHeader)
+					demoserver := BuildServerInfo(
+						serverName,
+						serverMap,
+						serverFolder,
+						serverGame,
+						serverPlayersCurrent,
+						serverPlayersMax,
+						serverPlayersBots,
+					)
 					go func() {
 						time.Sleep(serverLatency)
 						_, err := conn.WriteToUDP(demoserver, addr)
 						if err != nil {
 							fmt.Printf("a2s-info response error: %v", err)
+						}
+					}()
+				case A2S_PLAYER_REQUEST_HEADER:
+					fmt.Printf("a2s-player packet (%s) request 0x%x\n", addr.IP, a2sHeader)
+					demoPlayerInfo := BuildPlayerInfo(serverPlayersCurrent)
+					go func() {
+						time.Sleep(serverLatency)
+						_, err := conn.WriteToUDP(demoPlayerInfo, addr)
+						if err != nil {
+							fmt.Printf("a2s-player response error: %v", err)
+						}
+					}()
+				case A2S_RULES_REQUEST_HEADER:
+					fmt.Printf("a2s-rules packet (%s) request 0x%x\n", addr.IP, a2sHeader)
+					demoRules := BuildRules()
+					go func() {
+						time.Sleep(serverLatency)
+						_, err := conn.WriteToUDP(demoRules, addr)
+						if err != nil {
+							fmt.Printf("a2s-rules response error: %v", err)
 						}
 					}()
 				default:
@@ -120,7 +140,9 @@ var simCmd = &cobra.Command{
 	},
 }
 
-const A2S_INFO_HEADER = 0x53
+const A2S_INFO_REQUEST_HEADER = 0x54
+const A2S_PLAYER_REQUEST_HEADER = 0x55
+const A2S_RULES_REQUEST_HEADER = 0x56
 
 func BuildServerInfo(serverName string, serverMap string, serverFolder string, serverGame string, playersCurrent int, playersMax int, playersBots int) (b []byte) {
 	buf := bytes.Buffer{}
@@ -130,7 +152,7 @@ func BuildServerInfo(serverName string, serverMap string, serverFolder string, s
 	buf.WriteByte(0xFF)
 	buf.WriteByte(0xFF)
 	buf.WriteByte(0xFF)
-	buf.WriteByte(0x49)           // a2s-response header
+	buf.WriteByte(0x49)           // a2s-info-response header
 	buf.WriteByte(0x02)           // version
 	buf.WriteString(serverName)   // server name
 	buf.WriteByte(0x00)           // null byte
@@ -158,5 +180,35 @@ func BuildServerInfo(serverName string, serverMap string, serverFolder string, s
 
 	b = buf.Bytes()
 
+	return
+}
+
+func BuildPlayerInfo(playersCurrent int) (b []byte) {
+	buf := bytes.Buffer{}
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0x44) // a2s-player-response header
+	buf.WriteByte(0x00) //TODO implement players
+	b = buf.Bytes()
+	return
+}
+
+func BuildRules() (b []byte) {
+	buf := bytes.Buffer{}
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0xFF)
+	buf.WriteByte(0x45) // a2s-rules-response header
+
+	var numRules int16 = 0
+	numRulesBuf := make([]byte, 2)
+	binary.LittleEndian.PutUint16(numRulesBuf, uint16(numRules))
+	buf.WriteByte(numRulesBuf[0])
+	buf.WriteByte(numRulesBuf[1])
+
+	b = buf.Bytes()
 	return
 }
